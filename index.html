@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GNQCF Register — Grenada National Qualifications & Credit Framework</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇬🇩</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Libre Franklin','Segoe UI',system-ui,sans-serif;background:linear-gradient(175deg,#0a1628 0%,#0f2034 35%,#132d46 70%,#0a1628 100%);color:#e8edf3;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+input,select,textarea,button{font-family:inherit}
+input::placeholder,textarea::placeholder{color:#9ca3af}
+select option{color:#1e293b;background:#fff}
+a{color:inherit;text-decoration:none}
+
+/* Disclaimer */
+.disclaimer{background:linear-gradient(90deg,#fef3c7,#fde68a);border-bottom:2px solid #f59e0b;padding:10px 24px;text-align:center}
+.disclaimer p{font-size:12px;font-weight:700;color:#92400e;letter-spacing:.3px}
+
+/* Header */
+.header{background:linear-gradient(135deg,#0b1a30,#14324a,#0d2240);border-bottom:1px solid rgba(255,255,255,.06);position:relative}
+.header::before{content:'';position:absolute;inset:0;opacity:.03;background-image:repeating-linear-gradient(45deg,transparent,transparent 35px,rgba(255,255,255,.5) 35px,rgba(255,255,255,.5) 36px);pointer-events:none}
+.header-inner{max-width:1200px;margin:0 auto;padding:20px 24px;position:relative;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#007A3D,#005a2c);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(0,122,61,.3);border:2px solid rgba(255,255,255,.1)}
+.logo-icon img{width:48px;height:48px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,.1)}
+.org-name{font-size:18px;font-weight:800;color:#fff}
+.org-tag{font-size:12px;color:#7a94b0;margin-top:2px}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#0d9488,#0891b2,#0d9488);padding:48px 24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;opacity:.08;background:radial-gradient(circle at 20% 50%,rgba(255,255,255,.3),transparent 60%),radial-gradient(circle at 80% 30%,rgba(255,255,255,.2),transparent 50%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative}
+.flag-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;max-width:200px;margin-bottom:20px}
+.flag-bar div:nth-child(1){flex:1;background:#CE1126}.flag-bar div:nth-child(2){flex:1;background:#FCD116}.flag-bar div:nth-child(3){flex:1;background:#007A3D}
+.hero h2{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:800;color:#fff;line-height:1.1}
+.hero .sub{font-size:clamp(14px,2vw,18px);color:rgba(255,255,255,.85);margin-top:8px;font-weight:500}
+.hero .desc{font-size:13px;color:rgba(255,255,255,.65);margin-top:6px;max-width:520px;line-height:1.5}
+
+/* Nav */
+.nav{background:rgba(10,22,40,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;gap:2px;overflow-x:auto}
+.nav-btn{background:transparent;border:none;border-bottom:2.5px solid transparent;color:#7a94b0;padding:13px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .2s}
+.nav-btn.active{background:rgba(0,122,61,.15);border-bottom-color:#007A3D;color:#3dd68c}
+.nav-btn:hover{color:#a0c4d8}
+
+/* Main */
+.main{max-width:1200px;margin:0 auto;padding:24px 24px 60px}
+
+/* Cards / Panels */
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px}
+.card-hover{cursor:pointer;transition:all .2s}
+.card-hover:hover{border-color:rgba(0,122,61,.3);transform:translateY(-2px)}
+
+/* Inputs */
+.inp{width:100%;padding:10px 14px;font-size:14px;border:1px solid #d1d5db;border-radius:8px;color:#1e293b;outline:none;background:#fff}
+.inp-dark{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e8edf3;border-radius:10px;padding:13px 16px;font-size:14px;outline:none;width:100%}
+
+/* Buttons */
+.btn{border:none;border-radius:8px;color:#fff;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.btn-teal{background:#0d9488}.btn-orange{background:linear-gradient(135deg,#ea580c,#f97316);box-shadow:0 4px 16px rgba(234,88,12,.3)}
+.btn-gray{background:#6b7280}.btn-red{background:#dc2626}.btn-purple{background:#7c3aed}.btn-blue{background:#2563eb}.btn-indigo{background:#4f46e5}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:6px}
+.btn-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#aabbcc;padding:8px 16px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer}
+.btn-ghost-red{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#f87171}
+
+/* Pill buttons */
+.pill{border-radius:10px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#6b8aad}
+.pill.active{background:var(--ac,#007A3D)20;border-color:var(--ac,#007A3D)50;color:var(--ac,#007A3D)}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+.badge.big{padding:8px 16px;font-size:13px}
+.badge-registered{background:#6c757d15;color:#6c757d;border:1.5px solid #6c757d35}
+.badge-candidate{background:#e67e2215;color:#e67e22;border:1.5px solid #e67e2235}
+.badge-accredited{background:#27ae6015;color:#27ae60;border:1.5px solid #27ae6035}
+.badge-recognized{background:#2980b915;color:#2980b9;border:1.5px solid #2980b935}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{padding:12px 14px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;color:#5a7a9a}
+.tbl td{padding:12px 14px}
+.tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl-admin th{color:#64748b;background:#f8fafc;border-bottom:2px solid #e2e8f0}
+.tbl-admin td{padding:12px 14px}
+.tbl-admin tbody tr{border-bottom:1px solid #f1f5f9}
+
+/* Level chip */
+.lv-chip{border-radius:6px;padding:2px 8px;font-weight:700;font-size:11px;display:inline-block}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9000;padding:20px}
+.modal{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;color:#1e293b;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.modal h2{font-size:20px;font-weight:800;margin-bottom:18px}
+
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;z-index:9999;background:linear-gradient(135deg,#007A3D,#00a050);color:#fff;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,122,61,.4);animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* Admin */
+.admin-wrap{min-height:100vh;background:#f1f5f9;color:#1e293b}
+.admin-header{background:#fff;border-bottom:1px solid #e2e8f0;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.stat-card .label{font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase}
+.stat-card .value{font-size:32px;font-weight:800;margin-top:8px}
+
+/* Framework diagram bar */
+.fw-bar{border-radius:10px;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;transition:filter .2s;cursor:pointer}
+.fw-bar:hover{filter:brightness(1.2)}
+
+/* Footer */
+.footer{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.05);padding:24px;text-align:center}
+.footer p{font-size:12px;color:#4a6a8a}
+
+/* Grid helpers */
+.grid{display:grid;gap:14px}.grid-2{grid-template-columns:1fr 1fr}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}.nav-btn{padding:12px 12px;font-size:11px}}
+
+/* Descriptor card */
+.desc-card{background:rgba(0,0,0,.2);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,.05)}
+
+/* Welcome box */
+.welcome{background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.2);border-radius:14px;padding:24px;margin-bottom:20px}
+
+/* Filter row */
+.filter-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px}
+.filter-select{padding:10px 12px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#c8d8e8;cursor:pointer}
+
+/* Qual card */
+.qual-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 24px;transition:border-color .2s}
+.qual-card:hover{border-color:rgba(255,255,255,.12)}
+.qual-title{font-size:16px;font-weight:700;color:#3dd68c;margin:0}
+.qual-meta{font-size:12px;color:#8ba3be;margin:8px 0}
+.qual-detail{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:#7a94b0;align-items:center}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* ═══════════════════ STORAGE ═══════════════════ */
+const S={
+  g:k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch{return null}},
+  s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+};
+
+/* ═══════════════════ DATA ═══════════════════ */
+const DEF_PROV=["T.A. Marryshow Community College","Grenada National College","St. George's University","OECS Institute","New Life Organisation","University of the West Indies Open Campus – Grenada","Grenada Institute of Technology","Grenada School of Continuing Education"];
+const QTYPES=["Certificate","Diploma","Associate Degree","Bachelor's Degree","Postgraduate Diploma","Master's Degree","Doctoral Degree"];
+const SECTORS=["Hospitality","Education","Healthcare","Agriculture","Technology","Business","Arts","Engineering","Science","Social Sciences"];
+const STS=[
+  {key:"registered",label:"Registered",c:"#6c757d",icon:"📋"},
+  {key:"candidate",label:"Candidate",c:"#e67e22",icon:"🔶"},
+  {key:"accredited",label:"Accredited",c:"#27ae60",icon:"✅"},
+  {key:"recognized",label:"Recognized",c:"#2980b9",icon:"🏅"}
+];
+const LEVELS=[
+  {l:1,t:"Certificate I",q:"Certificate I",cr:"15–30",c:"#1B4332",d:{k:"Basic general knowledge and factual recall in a narrow range of areas.",s:"Perform simple, routine tasks under direct supervision using basic tools and materials.",co:"Work or study under direct supervision in a structured context. Limited autonomy.",a:"Apply knowledge and skills in familiar, predictable situations with guidance."}},
+  {l:2,t:"Certificate II",q:"Certificate II",cr:"30–60",c:"#2D6A4F",d:{k:"Basic factual knowledge of a field of work or study.",s:"Use basic cognitive and practical skills to complete routine tasks and solve straightforward problems.",co:"Work or study under supervision with some autonomy. Take limited responsibility.",a:"Apply knowledge and skills in familiar situations; interpret basic information."}},
+  {l:3,t:"Certificate III / CSEC",q:"Certificate III",cr:"60–90",c:"#40916C",d:{k:"Knowledge of facts, principles, processes and general concepts in a field of work or study.",s:"A range of cognitive and practical skills to accomplish tasks by selecting and applying basic methods, tools and materials.",co:"Take responsibility for completion of tasks. Adapt own behaviour to circumstances in solving problems.",a:"Apply knowledge and skills in a range of familiar contexts; some interpretation required."}},
+  {l:4,t:"Certificate IV / CAPE / Associate Degree",q:"Associate Degree / Certificate IV",cr:"120",c:"#52B788",d:{k:"Factual and theoretical knowledge in broad contexts within a field of work or study.",s:"A range of cognitive and practical skills to generate solutions to specific problems.",co:"Exercise self-management within guidelines. Supervise routine work of others.",a:"Apply knowledge and skills in a variety of contexts; analyse and interpret information."}},
+  {l:5,t:"Diploma / Advanced Associate Degree",q:"Diploma",cr:"120–150",c:"#74C69D",d:{k:"Comprehensive, factual and theoretical knowledge within a field and an awareness of the boundaries of that knowledge.",s:"A comprehensive range of cognitive and practical skills to develop creative solutions to abstract problems.",co:"Exercise management and supervision in contexts where there is unpredictable change.",a:"Apply integrated knowledge to complex activities; evaluate and select appropriate approaches."}},
+  {l:6,t:"Bachelor's Degree",q:"Bachelor's Degree",cr:"360–480",c:"#1B9AAA",d:{k:"Advanced knowledge of a field involving a critical understanding of theories and principles.",s:"Advanced skills demonstrating mastery and innovation required to solve complex and unpredictable problems.",co:"Manage complex technical or professional activities or projects, taking responsibility for decision-making.",a:"Apply specialised knowledge to analyse, evaluate and synthesize information from varied sources."}},
+  {l:7,t:"Postgraduate Diploma / Honours",q:"Postgraduate Diploma / Honours Degree",cr:"60–120",c:"#1687A7",d:{k:"Highly specialised knowledge, some at the forefront of a field, as the basis for original thinking and research.",s:"Specialised problem-solving skills required in research and innovation to develop new knowledge and procedures.",co:"Manage and transform work or study contexts that are complex, unpredictable and require new strategic approaches.",a:"Apply and integrate knowledge across disciplines to produce original analysis and solutions."}},
+  {l:8,t:"Master's Degree",q:"Master's Degree",cr:"180",c:"#0B5394",d:{k:"Knowledge at the most advanced frontier of a field and at the interface between fields.",s:"The most advanced and specialised skills and techniques, including synthesis and evaluation.",co:"Demonstrate substantial authority, innovation, autonomy, scholarly and professional integrity.",a:"Conduct advanced research; critically evaluate and synthesise complex ideas at the frontier of a discipline."}},
+  {l:9,t:"Doctoral Degree",q:"Doctoral Degree (PhD / EdD)",cr:"540+",c:"#073B6B",d:{k:"Highly specialised knowledge at the cutting-edge frontier, including original research that extends the body of knowledge.",s:"Demonstrate command of advanced research methodologies; generate original, publishable knowledge contributions.",co:"Full professional autonomy and academic authority. Lead and critically evaluate research agendas.",a:"Create and interpret new knowledge through original research of a quality to satisfy peer review and merit publication."}}
+];
+const LVLABELS=LEVELS.map(l=>"Level "+l.l);
+const CRGUIDE=[
+  {l:"1 credit",h:"10 notional learning hours"},{l:"3 credits",h:"30 notional learning hours (typical single-unit course)"},
+  {l:"15 credits",h:"150 notional learning hours (typical module)"},{l:"30 credits",h:"300 notional learning hours (one-semester full-time)"},
+  {l:"60 credits",h:"600 notional learning hours (one-year part-time)"},{l:"120 credits",h:"1,200 notional learning hours (one-year full-time / Associate Degree)"},
+  {l:"360 credits",h:"3,600 notional learning hours (three-year Bachelor's Degree)"},{l:"480 credits",h:"4,800 notional learning hours (four-year Bachelor's Degree)"}
+];
+
+const DEMO_INST=[
+  {id:"i1",name:"St. George's University",abbr:"SGU",type:"University",status:"accredited",dur:"2022–2027",parish:"St. George",web:"www.sgu.edu",ab:[{name:"Grenada National Accreditation Board",status:"accredited",duration:"2022–2027"},{name:"CAAM-HP",status:"recognized",duration:"2021–2026"}]},
+  {id:"i2",name:"T.A. Marryshow Community College",abbr:"TAMCC",type:"Community College",status:"accredited",dur:"2023–2028",parish:"St. George",web:"www.tamcc.edu.gd",ab:[{name:"Grenada National Accreditation Board",status:"accredited",duration:"2023–2028"}]},
+  {id:"i3",name:"New Life Organisation (NEWLO)",abbr:"NEWLO",type:"TVET Provider",status:"recognized",dur:"2023–2026",parish:"St. Andrew",web:"www.newlo.org",ab:[{name:"Grenada National Accreditation Board",status:"recognized",duration:"2023–2026"}]},
+  {id:"i4",name:"University of the West Indies Open Campus – Grenada",abbr:"UWI-OC",type:"University",status:"recognized",dur:"2021–2026",parish:"St. George",web:"www.open.uwi.edu",ab:[{name:"Grenada National Accreditation Board",status:"recognized",duration:"2021–2026"},{name:"University Council of Jamaica (UCJ)",status:"accredited",duration:"2020–2025"}]},
+  {id:"i5",name:"Grenada National College",abbr:"GNC",type:"College",status:"candidate",dur:"2024–2026",parish:"St. George",web:"www.gnc.edu.gd",ab:[{name:"Grenada National Accreditation Board",status:"candidate",duration:"2024–2026"}]},
+  {id:"i6",name:"Grenada Institute of Technology",abbr:"GIT",type:"TVET Provider",status:"candidate",dur:"2024–2026",parish:"St. George",web:"www.git.edu.gd",ab:[{name:"Grenada National Accreditation Board",status:"candidate",duration:"2024–2026"}]},
+  {id:"i7",name:"OECS Institute",abbr:"OECS",type:"Regional Institute",status:"registered",dur:"2025–2027",parish:"St. George",web:"www.oecs.org",ab:[{name:"Grenada National Accreditation Board",status:"registered",duration:"2025–2027"}]},
+  {id:"i8",name:"Grenada School of Continuing Education",abbr:"GSCE",type:"Continuing Education",status:"registered",dur:"2025–2027",parish:"St. George",web:"www.gsce.edu.gd",ab:[{name:"Grenada National Accreditation Board",status:"registered",duration:"2025–2027"}]}
+];
+
+const DEMO_Q=[
+  {id:1,title:"Doctor of Medicine (MD)",provider:"St. George's University",type:"Doctoral Degree",level:"Level 9",sector:"Healthcare",credits:540,description:"Professional medical degree with clinical rotations.",status:"accredited"},
+  {id:2,title:"Master of Public Health (MPH)",provider:"St. George's University",type:"Master's Degree",level:"Level 8",sector:"Healthcare",credits:180,description:"Graduate programme in public health sciences.",status:"accredited"},
+  {id:3,title:"Bachelor of Science in Biology",provider:"St. George's University",type:"Bachelor's Degree",level:"Level 6",sector:"Science",credits:360,description:"Undergraduate programme in biological sciences.",status:"accredited"},
+  {id:4,title:"Bachelor of Science in Nursing",provider:"St. George's University",type:"Bachelor's Degree",level:"Level 6",sector:"Healthcare",credits:360,description:"Professional nursing programme.",status:"accredited"},
+  {id:5,title:"Postgraduate Diploma in Public Health",provider:"St. George's University",type:"Postgraduate Diploma",level:"Level 7",sector:"Healthcare",credits:120,description:"Postgraduate specialisation in public health practice.",status:"accredited"},
+  {id:6,title:"Associate Degree in Business Administration",provider:"T.A. Marryshow Community College",type:"Associate Degree",level:"Level 4",sector:"Business",credits:120,description:"Foundation programme in business management.",status:"accredited"},
+  {id:7,title:"Associate Degree in Information Technology",provider:"T.A. Marryshow Community College",type:"Associate Degree",level:"Level 4",sector:"Technology",credits:120,description:"Programme covering networking, programming and IT systems.",status:"accredited"},
+  {id:8,title:"Advanced Diploma in Hospitality Management",provider:"T.A. Marryshow Community College",type:"Diploma",level:"Level 5",sector:"Hospitality",credits:150,description:"Comprehensive programme covering hotel and tourism operations.",status:"accredited"},
+  {id:9,title:"Certificate in Electrical Installation",provider:"T.A. Marryshow Community College",type:"Certificate",level:"Level 3",sector:"Engineering",credits:90,description:"Technical vocational programme in electrical systems.",status:"accredited"},
+  {id:10,title:"Diploma in Teacher Education",provider:"T.A. Marryshow Community College",type:"Diploma",level:"Level 5",sector:"Education",credits:150,description:"Professional teacher training programme.",status:"recognized"},
+  {id:11,title:"Certificate in Culinary Arts",provider:"T.A. Marryshow Community College",type:"Certificate",level:"Level 3",sector:"Hospitality",credits:60,description:"Practical culinary skills and kitchen management.",status:"accredited"},
+  {id:12,title:"Certificate in Early Childhood Education",provider:"Grenada National College",type:"Certificate",level:"Level 3",sector:"Education",credits:60,description:"Foundation qualification for early childhood educators.",status:"candidate"},
+  {id:13,title:"Certificate I in Construction Trades",provider:"New Life Organisation (NEWLO)",type:"Certificate",level:"Level 1",sector:"Engineering",credits:30,description:"Entry-level programme in construction skills.",status:"recognized"},
+  {id:14,title:"Certificate II in Plumbing",provider:"New Life Organisation (NEWLO)",type:"Certificate",level:"Level 2",sector:"Engineering",credits:45,description:"Vocational programme in plumbing systems.",status:"recognized"},
+  {id:15,title:"Bachelor of Education (Primary)",provider:"University of the West Indies Open Campus – Grenada",type:"Bachelor's Degree",level:"Level 6",sector:"Education",credits:360,description:"Undergraduate degree in primary education.",status:"recognized"},
+  {id:16,title:"Master of Education in Leadership",provider:"University of the West Indies Open Campus – Grenada",type:"Master's Degree",level:"Level 8",sector:"Education",credits:180,description:"Graduate programme in educational leadership.",status:"recognized"},
+  {id:17,title:"Certificate II in Computer Repair & Networking",provider:"Grenada Institute of Technology",type:"Certificate",level:"Level 2",sector:"Technology",credits:45,description:"Practical programme in hardware and network fundamentals.",status:"candidate"},
+  {id:18,title:"Certificate in Agriculture",provider:"OECS Institute",type:"Certificate",level:"Level 2",sector:"Agriculture",credits:60,description:"Introduction to agricultural practices.",status:"registered"}
+];
+
+/* ═══════════════════ STATE ═══════════════════ */
+let state = {
+  isAdmin:false, showLogin:false, showBack:false, showAdd:false,
+  showSettings:false, showProv:false, editQ:null, toast:null,
+  pw: S.g("gnqcf-pw")||"admin123",
+  quals: S.g("gnqcf-q")||[],
+  insts: S.g("gnqcf-i")||[],
+  custProv: S.g("gnqcf-cp")||[],
+  delProv: S.g("gnqcf-dp")||[],
+  logo: S.g("gnqcf-logo")||"",
+  org: S.g("gnqcf-org")||"GNAB",
+  tag: S.g("gnqcf-tag")||"Grenada National Accreditation Board",
+  tab:"register", search:"",
+  flt:{provider:"all",type:"all",level:"all",sector:"all",status:"all"},
+  instFlt:"all", selInst:null, selLv:null, fwView:"diagram",
+  fd:{}, toastTimer:null
+};
+
+function persist(){
+  S.s("gnqcf-q",state.quals);S.s("gnqcf-i",state.insts);S.s("gnqcf-cp",state.custProv);S.s("gnqcf-dp",state.delProv);
+  S.s("gnqcf-pw",state.pw);S.s("gnqcf-logo",state.logo);S.s("gnqcf-org",state.org);S.s("gnqcf-tag",state.tag);
+}
+
+/* ═══════════════════ HELPERS ═══════════════════ */
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const getBadge=s=>STS.find(o=>o.key===s)||STS[0];
+const getLv=str=>{const n=parseInt((str||"").replace("Level ",""));return LEVELS.find(x=>x.l===n)};
+const badge=(status,big)=>{const b=getBadge(status);return `<span class="badge ${big?'big':''} badge-${status}"><span style="font-size:${big?'15':'12'}px">${b.icon}</span>${b.label}</span>`};
+const notify=msg=>{state.toast=msg;render();if(state.toastTimer)clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>{state.toast=null;render()},3000)};
+const allProv=()=>[...DEF_PROV.filter(p=>!state.delProv.includes(p)),...state.custProv];
+
+function filterQuals(){
+  const s=state.search.toLowerCase();
+  return state.quals.filter(q=>{
+    const ms=!s||q.title.toLowerCase().includes(s)||q.provider.toLowerCase().includes(s);
+    const f=state.flt;
+    return ms&&(f.provider==="all"||q.provider===f.provider)&&(f.type==="all"||q.type===f.type)&&(f.level==="all"||q.level===f.level)&&(f.sector==="all"||q.sector===f.sector)&&(f.status==="all"||q.status===f.status);
+  });
+}
+function filterInst(){
+  const s=state.search.toLowerCase();
+  return state.insts.filter(i=>(state.instFlt==="all"||i.status===state.instFlt)&&(!s||i.name.toLowerCase().includes(s)));
+}
+
+/* ═══════════════════ ACTIONS ═══════════════════ */
+function loadDemo(){state.quals=JSON.parse(JSON.stringify(DEMO_Q));state.insts=JSON.parse(JSON.stringify(DEMO_INST));persist();notify("Demo data loaded!")}
+function doLogin(){
+  const pw=document.getElementById("pwInput")?.value||"";
+  if(pw===state.pw){state.isAdmin=true;state.showLogin=false;notify("Logged in!")}
+  else notify("Invalid password");
+  render();
+}
+function doSave(){
+  const fd=state.fd;
+  if(!fd.title||!fd.provider){notify("Fill required fields");return}
+  if(state.editQ){state.quals=state.quals.map(q=>q.id===state.editQ.id?{...q,...fd}:q)}
+  else{state.quals.push({id:Date.now(),...fd})}
+  state.showAdd=false;state.editQ=null;state.fd={};persist();notify("Saved!");
+}
+function doDel(id){if(!confirm("Delete this qualification?"))return;state.quals=state.quals.filter(q=>q.id!==id);persist();notify("Deleted!");render()}
+function doAddProv(){
+  const n=(document.getElementById("newProvInput")?.value||"").trim();
+  if(!n)return;if(allProv().includes(n)){notify("Already exists");return}
+  state.custProv.push(n);persist();notify("Provider added!");render();
+  const el=document.getElementById("newProvInput");if(el)el.value="";
+}
+function doDelProv(name){state.custProv=state.custProv.filter(p=>p!==name);persist();notify("Removed!");render()}
+function doDelDefProv(name){if(!confirm('Remove "'+name+'" from default providers?'))return;state.delProv.push(name);persist();notify("Provider removed!");render()}
+function doRestoreProv(name){state.delProv=state.delProv.filter(p=>p!==name);persist();notify("Provider restored!");render()}
+function doUpdPw(){
+  const np=document.getElementById("newPwInput")?.value||"";
+  const cp=document.getElementById("cfPwInput")?.value||"";
+  if(np.length<6){notify("Min 6 characters");return}
+  if(np!==cp){notify("Passwords don't match");return}
+  state.pw=np;persist();notify("Password updated!");render();
+}
+function doSaveBrand(){
+  const n=document.getElementById("brandName")?.value;
+  const t=document.getElementById("brandTag")?.value;
+  const l=document.getElementById("brandLogo")?.value;
+  if(n)state.org=n;if(t)state.tag=t;if(l!==undefined)state.logo=l;
+  persist();notify("Branding saved!");render();
+}
+
+function setTab(t){state.tab=t;state.selInst=null;state.selLv=null;render()}
+function setFlt(k,v){state.flt[k]=v;render()}
+function setInstFlt(v){state.instFlt=v;render()}
+function setSearch(v){state.search=v;render()}
+function openInst(id){state.selInst=state.insts.find(i=>i.id===id);render()}
+function backInst(){state.selInst=null;render()}
+function setSelLv(l){state.selLv=state.selLv===l?null:l;render()}
+function openEdit(id){const q=state.quals.find(x=>x.id===id);state.editQ=q;state.fd={...q};state.showAdd=true;render()}
+function openAdd(){state.fd={};state.editQ=null;state.showAdd=true;render()}
+
+/* ═══════════════════ RENDER ═══════════════════ */
+function render(){
+  const app=document.getElementById("app");
+
+  /* ─── ADMIN BACKEND ─── */
+  if(state.isAdmin&&state.showBack){
+    const acc=state.quals.filter(q=>q.status==="accredited").length;
+    const cand=state.quals.filter(q=>q.status==="candidate").length;
+    app.innerHTML=`
+    <div class="admin-wrap">
+      ${state.toast?`<div class="toast">✓ ${esc(state.toast)}</div>`:""}
+      <div class="admin-header">
+        <h1 style="font-size:24px;font-weight:800">⚙️ Admin Panel</h1>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-gray" onclick="state.showSettings=true;render()">⚙️ Settings</button>
+          <button class="btn btn-indigo" onclick="state.showProv=true;render()">📋 Providers</button>
+          <button class="btn btn-teal" onclick="state.showBack=false;render()">🌐 Public View</button>
+          <button class="btn btn-red" onclick="state.isAdmin=false;state.showBack=false;render()">Logout</button>
+        </div>
+      </div>
+      <div style="max-width:1200px;margin:0 auto;padding:24px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px">
+          <div class="stat-card"><p class="label">Total Qualifications</p><p class="value" style="color:#0d9488">${state.quals.length}</p></div>
+          <div class="stat-card"><p class="label">Accredited</p><p class="value" style="color:#16a34a">${acc}</p></div>
+          <div class="stat-card"><p class="label">Candidate</p><p class="value" style="color:#ea580c">${cand}</p></div>
+          <div class="stat-card"><p class="label">Institutions</p><p class="value" style="color:#2563eb">${state.insts.length}</p></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+          <button class="btn btn-purple" onclick="loadDemo()">🔄 Load Demo Data</button>
+          <button class="btn btn-teal" onclick="openAdd()">➕ Add Qualification</button>
+        </div>
+        <div style="background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:auto">
+          <table class="tbl tbl-admin" style="min-width:800px">
+            <thead><tr>${["Title","Provider","Type","Level","Sector","Credits","Status","Actions"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${state.quals.length===0?`<tr><td colspan="8" style="padding:40px;text-align:center;color:#94a3b8">No qualifications yet. Load demo data or add manually.</td></tr>`:""}
+              ${state.quals.map(q=>{const lv=getLv(q.level);return`
+              <tr>
+                <td style="font-weight:600;color:#1e293b;max-width:240px">${esc(q.title)}</td>
+                <td style="color:#64748b;font-size:12px">${esc(q.provider)}</td>
+                <td style="color:#64748b">${esc(q.type||"")}</td>
+                <td>${lv?`<span class="lv-chip" style="background:${lv.c}20;color:${lv.c}">${esc(q.level)}</span>`:""}</td>
+                <td style="color:#64748b">${esc(q.sector||"")}</td>
+                <td style="font-weight:600">${q.credits||"—"}</td>
+                <td>${badge(q.status||"registered")}</td>
+                <td>
+                  <button onclick="openEdit(${q.id})" style="background:none;border:none;cursor:pointer;font-size:16px;margin-right:6px">✏️</button>
+                  <button onclick="doDel(${q.id})" style="background:none;border:none;cursor:pointer;font-size:16px">🗑️</button>
+                </td>
+              </tr>`}).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      ${renderModals()}
+    </div>`;
+    return;
+  }
+
+  /* ─── PUBLIC VIEW ─── */
+  const activeTab=state.tab;
+  app.innerHTML=`
+  ${state.toast?`<div class="toast">✓ ${esc(state.toast)}</div>`:""}
+
+  <!-- Disclaimer -->
+  <div class="disclaimer"><p>⚠️ DISCLAIMER: All information should be verified with the Grenada National Accreditation Board (GNAB). This register is for informational purposes.</p></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-area">
+        ${state.logo?`<div class="logo-icon"><img src="${esc(state.logo)}" alt="Logo" onerror="this.style.display='none'"></div>`:`<div class="logo-icon">🇬🇩</div>`}
+        <div><div class="org-name">${esc(state.org)}</div><div class="org-tag">${esc(state.tag)}</div></div>
+      </div>
+      <div>
+        ${state.isAdmin?`
+          <button class="btn-ghost" onclick="state.showBack=true;render()">⚙️ Admin</button>
+          <button class="btn-ghost btn-ghost-red" style="margin-left:8px" onclick="state.isAdmin=false;render()">Logout</button>
+        `:`<button class="btn btn-orange" onclick="state.showLogin=true;render()">Admin Login</button>`}
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="flag-bar"><div></div><div></div><div></div></div>
+      <h2>GNQCF</h2>
+      <p class="sub">Grenada National Qualifications & Credit Framework</p>
+      <p class="desc">The only official register for all institutions, providers and programmes in Grenada.</p>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav"><div class="nav-inner">
+    ${[{k:"register",l:"Qualifications Register",i:"📚"},{k:"institutions",l:"Institutions",i:"🏛"},{k:"framework",l:"Framework",i:"📐"},{k:"levels",l:"Levels & Descriptors",i:"📊"},{k:"credits",l:"Credit Guide",i:"🧮"}].map(t=>`<button class="nav-btn ${activeTab===t.k?'active':''}" onclick="setTab('${t.k}')"><span style="font-size:14px">${t.i}</span>${t.l}</button>`).join("")}
+  </div></nav>
+
+  <!-- Main -->
+  <main class="main">
+    ${activeTab==="register"?renderRegister():""}
+    ${activeTab==="institutions"?renderInstitutions():""}
+    ${activeTab==="framework"?renderFramework():""}
+    ${activeTab==="levels"?renderLevels():""}
+    ${activeTab==="credits"?renderCredits():""}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="flag-bar" style="max-width:120px;margin:0 auto 12px;height:3px"></div>
+    <p>© 2026 Grenada National Qualifications and Credit Framework · Ministry of Education, Grenada</p>
+  </footer>
+
+  ${state.showLogin?renderLoginModal():""}
+  ${renderModals()}
+  `;
+}
+
+/* ═══════════════════ TAB RENDERERS ═══════════════════ */
+
+function renderRegister(){
+  const f=filterQuals();
+  const ap=allProv();
+  return `
+  ${state.quals.length===0?`<div class="welcome"><h3 style="margin:0 0 6px;font-size:16px;font-weight:700">👋 Welcome!</h3><p style="color:#7a94b0;font-size:13px;margin:0">No qualifications data found.${state.isAdmin?` <button class="btn btn-teal btn-sm" onclick="loadDemo()">Load Demo Data</button>`:""}</p></div>`:""}
+  <input class="inp-dark" value="${esc(state.search)}" oninput="setSearch(this.value)" placeholder="Search qualifications or providers..." style="margin-bottom:16px">
+  <div class="filter-row">
+    ${[{k:"provider",lb:"All Providers",opts:ap},{k:"type",lb:"All Types",opts:QTYPES},{k:"level",lb:"All Levels",opts:LVLABELS},{k:"sector",lb:"All Sectors",opts:SECTORS},{k:"status",lb:"All Status",opts:STS.map(s=>s.key)}].map(fl=>`
+    <select class="filter-select" onchange="setFlt('${fl.k}',this.value)">
+      <option value="all" ${state.flt[fl.k]==="all"?"selected":""}>${fl.lb}</option>
+      ${fl.opts.map(o=>`<option value="${esc(o)}" ${state.flt[fl.k]===o?"selected":""}>${fl.k==="status"?getBadge(o).icon+" "+getBadge(o).label:esc(o)}</option>`).join("")}
+    </select>`).join("")}
+  </div>
+  <div class="card">
+    ${f.length===0?`<p style="text-align:center;padding:40px;color:#5a7a9a">No qualifications found</p>`:`
+    <p style="margin:0 0 16px;font-size:13px;color:#6b8aad">Showing ${f.length} qualification${f.length!==1?"s":""}</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${f.map(q=>{const lv=getLv(q.level);return`
+      <div class="qual-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:240px">
+            <h3 class="qual-title">${esc(q.title)}</h3>
+            <p class="qual-meta"><strong style="color:#a0b8d0">Provider:</strong> ${esc(q.provider)}</p>
+            <div class="qual-detail">
+              <span><strong>Type:</strong> ${esc(q.type||"")}</span><span>|</span>
+              ${lv?`<span class="lv-chip" style="background:${lv.c}25;color:${lv.c}">${esc(q.level)}</span>`:""}<span>|</span>
+              <span><strong>Sector:</strong> ${esc(q.sector||"")}</span>
+              ${q.credits?`<span>|</span><span><strong>Credits:</strong> ${q.credits}</span>`:""}
+            </div>
+            ${q.description?`<p style="margin:8px 0 0;font-size:13px;color:#6b8aad;line-height:1.5">${esc(q.description)}</p>`:""}
+          </div>
+          ${badge(q.status||"registered")}
+        </div>
+      </div>`}).join("")}
+    </div>`}
+  </div>`;
+}
+
+function renderInstitutions(){
+  if(state.selInst) return renderInstDetail();
+  const fi=filterInst();
+  return `
+  ${state.insts.length===0?`<div class="welcome"><p style="margin:0;color:#7a94b0;font-size:13px">No institutions data.${state.isAdmin?` <button class="btn btn-teal btn-sm" onclick="loadDemo()">Load Demo Data</button>`:""}</p></div>`:""}
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    <button class="pill ${state.instFlt==="all"?"active":""}" style="--ac:#7a94b0" onclick="setInstFlt('all')">All (${state.insts.length})</button>
+    ${STS.map(s=>{const ct=state.insts.filter(i=>i.status===s.key).length;return`<button class="pill ${state.instFlt===s.key?"active":""}" style="--ac:${s.c}" onclick="setInstFlt('${s.key}')">${s.icon} ${s.label} (${ct})</button>`}).join("")}
+  </div>
+  <input class="inp-dark" value="${esc(state.search)}" oninput="setSearch(this.value)" placeholder="Search institutions..." style="margin-bottom:20px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px">
+    ${fi.map(inst=>`
+    <div class="card card-hover" onclick="openInst('${inst.id}')">
+      <h3 style="margin:0 0 6px;font-size:16px;font-weight:700;color:#fff">${esc(inst.name)}</h3>
+      <p style="margin:0 0 10px;font-size:12px;color:#6b8aad">${esc(inst.type)} · ${esc(inst.parish)}</p>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${badge(inst.status)}<span style="font-size:11px;color:#5a7a9a">${esc(inst.dur)}</span></div>
+      <div style="font-size:12px;color:#5a7a9a">📚 ${state.quals.filter(q=>q.provider===inst.name).length} programmes · 🌐 ${esc(inst.web)}</div>
+    </div>`).join("")}
+  </div>`;
+}
+
+function renderInstDetail(){
+  const inst=state.selInst;
+  const iq=state.quals.filter(q=>q.provider===inst.name);
+  return `
+  <button class="btn-ghost" onclick="backInst()" style="margin-bottom:20px">← Back to Institutions</button>
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden">
+    <div style="padding:28px;background:linear-gradient(135deg,rgba(0,122,61,.08),rgba(0,80,160,.06));border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#14324a,#1a4060);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#3dd68c;font-family:'Playfair Display',serif;border:1px solid rgba(255,255,255,.1)">${esc((inst.abbr||"?").charAt(0))}</div>
+        <div style="flex:1"><h2 style="margin:0;font-size:22px;font-weight:800;font-family:'Playfair Display',serif">${esc(inst.name)}</h2><p style="margin:3px 0 0;color:#7a94b0;font-size:13px">${esc(inst.type)} · ${esc(inst.parish)} · ${esc(inst.web)}</p></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px">${badge(inst.status,true)}<span style="font-size:13px;color:#5a7a9a">Valid: ${esc(inst.dur)}</span></div>
+    </div>
+    <div style="padding:22px 28px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;color:#c8d8e8">Registered Programmes (${iq.length})</h3>
+      ${iq.length>0?`<div style="overflow-x:auto"><table class="tbl" style="min-width:600px">
+        <thead><tr>${["Programme","Level","Type","Credits","Status"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+        <tbody>${iq.map(q=>{const lv=getLv(q.level);return`
+          <tr>
+            <td style="font-weight:500">${esc(q.title)}</td>
+            <td>${lv?`<span class="lv-chip" style="background:${lv.c}25;color:${lv.c}">${esc(q.level)}</span>`:""}</td>
+            <td style="color:#8ba3be">${esc(q.type||"")}</td>
+            <td style="font-weight:600">${q.credits||"—"}</td>
+            <td>${badge(q.status||"registered")}</td>
+          </tr>`}).join("")}</tbody>
+      </table></div>`:`<p style="color:#5a7a9a;font-size:13px">No programmes registered.</p>`}
+    </div>
+    <div style="padding:22px 28px 28px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.12)">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;color:#c8d8e8">🏛 Accreditation Bodie(s)</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+        ${(inst.ab||[]).map(ab=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px">
+          <p style="margin:0;font-weight:600;font-size:14px">${esc(ab.name)}</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px">${badge(ab.status)}<span style="font-size:12px;color:#5a7a9a">Duration: ${esc(ab.duration)}</span></div>
+        </div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFramework(){
+  return `
+  <div style="display:flex;gap:10px;margin-bottom:24px">
+    ${[{k:"diagram",l:"Framework Diagram"},{k:"table",l:"Table View"}].map(v=>`<button class="pill ${state.fwView===v.k?"active":""}" style="--ac:#007A3D" onclick="state.fwView='${v.k}';render()">${v.l}</button>`).join("")}
+  </div>
+  ${state.fwView==="diagram"?`
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:28px 28px 32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:0 0 4px;text-align:center">GNQCF — National Qualifications Framework</h2>
+    <p style="text-align:center;color:#6b8aad;font-size:13px;margin-bottom:28px">9 levels from Certificate I to Doctoral Degree · Click any level for details</p>
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:800px;margin:0 auto">
+      ${[...LEVELS].reverse().map(lv=>{const w=40+(lv.l/9)*60;return`
+      <div style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="state.tab='levels';state.selLv=${lv.l};render()">
+        <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#5a7a9a;flex-shrink:0">L${lv.l}</span>
+        <div class="fw-bar" style="width:${w}%;min-height:42px;background:linear-gradient(135deg,${lv.c},${lv.c}cc);box-shadow:0 2px 12px ${lv.c}30">
+          <span style="font-weight:700;font-size:13px;color:#fff">${esc(lv.t)}</span>
+          <span style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500">${lv.cr} credits</span>
+        </div>
+      </div>`}).join("")}
+    </div>
+  </div>`:`
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:auto">
+    <table class="tbl" style="min-width:600px">
+      <thead><tr style="background:rgba(0,122,61,.1)">${["Level","Qualification Title","Credits","Example Programmes"].map(h=>`<th style="color:#3dd68c">${h}</th>`).join("")}</tr></thead>
+      <tbody>${LEVELS.map(lv=>{const progs=state.quals.filter(q=>q.level==="Level "+lv.l);return`
+        <tr>
+          <td><span style="background:${lv.c}30;color:#fff;border-radius:8px;padding:4px 12px;font-weight:800;font-size:13px;border:1px solid ${lv.c}50;display:inline-block">${lv.l}</span></td>
+          <td style="font-weight:600">${esc(lv.q)}</td>
+          <td style="font-weight:600">${lv.cr}</td>
+          <td style="color:#8ba3be;font-size:12px">${progs.slice(0,3).map(p=>esc(p.title)).join("; ")||"—"}${progs.length>3?` + ${progs.length-3} more`:""}</td>
+        </tr>`}).join("")}</tbody>
+    </table>
+  </div>`}`;
+}
+
+function renderLevels(){
+  const sl=state.selLv;
+  return `
+  <p style="color:#7a94b0;font-size:14px;margin-bottom:18px;max-width:700px">Each level describes the complexity and depth of learning. Select a level to view its full descriptors.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px">
+    ${LEVELS.map(lv=>`<button onclick="setSelLv(${lv.l})" style="background:${sl===lv.l?lv.c:"rgba(255,255,255,.04)"};border:1.5px solid ${sl===lv.l?lv.c:"rgba(255,255,255,.1)"};border-radius:10px;padding:10px 16px;font-size:13px;color:${sl===lv.l?"#fff":"#8ba3be"};cursor:pointer;font-weight:700;transition:all .2s">L${lv.l}</button>`).join("")}
+  </div>
+  ${sl?renderLevelDetail(LEVELS.find(x=>x.l===sl)):renderLevelList()}`;
+}
+
+function renderLevelDetail(lv){
+  return `
+  <div style="background:rgba(255,255,255,.03);border:1px solid ${lv.c}40;border-radius:18px;overflow:hidden">
+    <div style="padding:24px 28px 18px;background:linear-gradient(135deg,${lv.c}15,transparent);border-bottom:1px solid ${lv.c}20">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="background:${lv.c};color:#fff;border-radius:12px;padding:8px 16px;font-weight:900;font-size:18px;box-shadow:0 4px 16px ${lv.c}40">${lv.l}</span>
+        <div><h3 style="margin:0;font-size:22px;font-weight:700;font-family:'Playfair Display',serif">${esc(lv.t)}</h3><p style="margin:2px 0 0;color:#6b8aad;font-size:13px">${esc(lv.q)} · ${lv.cr} credits</p></div>
+      </div>
+    </div>
+    <div style="padding:22px 28px 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
+      ${[{k:"k",lb:"Knowledge",i:"📖"},{k:"s",lb:"Skills",i:"⚙️"},{k:"co",lb:"Competence",i:"🎯"},{k:"a",lb:"Application",i:"🔬"}].map(d=>`
+      <div class="desc-card">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px"><span style="font-size:16px">${d.i}</span><span style="font-size:11px;font-weight:700;color:${lv.c};text-transform:uppercase;letter-spacing:.5px">${d.lb}</span></div>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#b0c4d8">${esc(lv.d[d.k])}</p>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderLevelList(){
+  return `<div style="display:flex;flex-direction:column;gap:8px">
+    ${LEVELS.map(lv=>`
+    <div onclick="setSelLv(${lv.l})" style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:12px;cursor:pointer;transition:all .2s" onmouseenter="this.style.borderColor='${lv.c}50'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+      <span style="background:${lv.c};color:#fff;border-radius:10px;padding:6px 14px;font-weight:800;font-size:14px">${lv.l}</span>
+      <div style="flex:1"><span style="font-weight:600;font-size:14px">${esc(lv.t)}</span><span style="color:#5a7a9a;font-size:12px;margin-left:10px">${esc(lv.q)}</span></div>
+      <span style="color:#5a7a9a;font-size:13px;font-weight:600">${lv.cr} cr</span><span style="color:#4a6a8a">›</span>
+    </div>`).join("")}
+  </div>`;
+}
+
+function renderCredits(){
+  return `
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:28px;margin-bottom:20px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:0 0 8px">Credit Calculation Guide</h2>
+    <p style="color:#7a94b0;font-size:14px;line-height:1.6;margin:0 0 22px;max-width:700px">Credits in the GNQCF are based on notional learning hours — the total time an average learner is expected to need to achieve the learning outcomes.</p>
+    <div style="background:rgba(0,122,61,.08);border:1px solid rgba(0,122,61,.2);border-radius:14px;padding:22px;text-align:center;margin-bottom:24px">
+      <p style="margin:0;font-size:12px;color:#6b8aad;font-weight:600;text-transform:uppercase;letter-spacing:1px">Core Formula</p>
+      <p style="margin:10px 0 0;font-size:28px;font-weight:800;font-family:'Playfair Display',serif;background:linear-gradient(135deg,#3dd68c,#1B9AAA);-webkit-background-clip:text;-webkit-text-fill-color:transparent">1 Credit = 10 Notional Learning Hours</p>
+    </div>
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#c8d8e8">Quick Reference</h3>
+    <div style="display:grid;gap:6px">
+      ${CRGUIDE.map((item,i)=>`
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 18px;background:${i%2===0?"rgba(255,255,255,.02)":"transparent"};border-radius:8px">
+        <span style="background:#007A3D22;color:#3dd68c;border-radius:8px;padding:5px 14px;font-weight:800;font-size:13px;min-width:90px;text-align:center;border:1px solid #007A3D30">${esc(item.l)}</span>
+        <span style="color:#5a7a9a;font-size:13px">=</span><span style="font-size:13px">${esc(item.h)}</span>
+      </div>`).join("")}
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;color:#c8d8e8">Example Calculations</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+      ${[{p:"Certificate I (1 module)",c:"15 credits × 10 = 150 hours"},{p:"Associate Degree (2-year)",c:"120 credits × 10 = 1,200 hours"},{p:"Bachelor's Degree (3-year)",c:"360 credits × 10 = 3,600 hours"},{p:"Master's Degree",c:"180 credits × 10 = 1,800 hours"}].map(ex=>`
+      <div style="background:rgba(0,0,0,.2);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.05)">
+        <p style="margin:0;font-size:13px;font-weight:600">${ex.p}</p><p style="margin:6px 0 0;font-size:14px;color:#3dd68c;font-weight:700">${ex.c}</p>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════ MODALS ═══════════════════ */
+function renderLoginModal(){
+  return `
+  <div class="modal-overlay" onclick="state.showLogin=false;render()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <h2>Admin Login</h2>
+      <input type="password" id="pwInput" class="inp" placeholder="Password" onkeypress="if(event.key==='Enter')doLogin()" autofocus>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-teal" style="flex:1" onclick="doLogin()">Login</button>
+        <button class="btn btn-gray" style="flex:1" onclick="state.showLogin=false;render()">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderModals(){
+  let html="";
+
+  /* Add/Edit Qualification */
+  if(state.showAdd){
+    const fd=state.fd;const ap=allProv();
+    html+=`
+    <div class="modal-overlay" onclick="state.showAdd=false;state.editQ=null;render()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h2>${state.editQ?"Edit":"Add"} Qualification</h2>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <input class="inp" placeholder="Title *" value="${esc(fd.title||"")}" oninput="state.fd.title=this.value">
+          <select class="inp" onchange="state.fd.provider=this.value"><option value="">Select Provider *</option>${ap.map(p=>`<option ${fd.provider===p?"selected":""}>${esc(p)}</option>`).join("")}</select>
+          <div class="grid grid-2">
+            <select class="inp" onchange="state.fd.type=this.value"><option value="">Type</option>${QTYPES.map(t=>`<option ${fd.type===t?"selected":""}>${esc(t)}</option>`).join("")}</select>
+            <select class="inp" onchange="state.fd.level=this.value"><option value="">Level</option>${LVLABELS.map(l=>`<option ${fd.level===l?"selected":""}>${esc(l)}</option>`).join("")}</select>
+          </div>
+          <div class="grid grid-2">
+            <select class="inp" onchange="state.fd.sector=this.value"><option value="">Sector</option>${SECTORS.map(s=>`<option ${fd.sector===s?"selected":""}>${esc(s)}</option>`).join("")}</select>
+            <input class="inp" type="number" placeholder="Credits" value="${fd.credits||""}" oninput="state.fd.credits=parseInt(this.value)||''">
+          </div>
+          <select class="inp" onchange="state.fd.status=this.value"><option value="">Status</option>${STS.map(s=>`<option value="${s.key}" ${fd.status===s.key?"selected":""}>${s.icon} ${s.label}</option>`).join("")}</select>
+          <textarea class="inp" placeholder="Description" rows="3" oninput="state.fd.description=this.value">${esc(fd.description||"")}</textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <button class="btn btn-teal" style="flex:1" onclick="doSave()">Save</button>
+          <button class="btn btn-gray" style="flex:1" onclick="state.showAdd=false;state.editQ=null;render()">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* Provider Manager */
+  if(state.showProv){
+    html+=`
+    <div class="modal-overlay" onclick="state.showProv=false;render()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h2>Manage Providers</h2>
+        <div style="display:flex;gap:8px;margin-bottom:18px">
+          <input class="inp" id="newProvInput" placeholder="New provider name" onkeypress="if(event.key==='Enter')doAddProv()" style="flex:1">
+          <button class="btn btn-teal" onclick="doAddProv()">Add</button>
+        </div>
+        <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Default Providers</h4>
+        <div style="max-height:200px;overflow-y:auto;margin-bottom:14px">
+          ${DEF_PROV.filter(p=>!state.delProv.includes(p)).map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8fafc;border-radius:8px;margin-bottom:4px;font-size:13px"><span>${esc(p)}</span><div style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:11px;font-style:italic">Default</span><button onclick="doDelDefProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:14px;color:#dc2626" title="Remove provider">🗑️</button></div></div>`).join("")}
+          ${DEF_PROV.filter(p=>!state.delProv.includes(p)).length===0?`<p style="color:#94a3b8;font-size:13px;padding:8px 12px">All default providers have been removed.</p>`:""}
+        </div>
+        ${state.delProv.length>0?`
+        <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Removed Providers <span style="color:#94a3b8;font-size:11px">(click to restore)</span></h4>
+        <div style="max-height:160px;overflow-y:auto;margin-bottom:14px">
+          ${state.delProv.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fef2f2;border-radius:8px;margin-bottom:4px;font-size:13px;opacity:.7"><span style="text-decoration:line-through;color:#9ca3af">${esc(p)}</span><button onclick="doRestoreProv('${esc(p.replace(/'/g,"\\'"))}')" class="btn btn-teal btn-sm" style="font-size:11px;padding:4px 12px">↩ Restore</button></div>`).join("")}
+        </div>`:""}
+        ${state.custProv.length>0?`
+        <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Custom Providers</h4>
+        <div style="max-height:200px;overflow-y:auto">
+          ${state.custProv.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#eff6ff;border-radius:8px;margin-bottom:4px;font-size:13px"><span>${esc(p)}</span><button onclick="doDelProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:14px;color:#dc2626">🗑️</button></div>`).join("")}
+        </div>`:""}
+        <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn btn-gray" onclick="state.showProv=false;render()">Close</button></div>
+      </div>
+    </div>`;
+  }
+
+  /* Settings */
+  if(state.showSettings){
+    html+=`
+    <div class="modal-overlay" onclick="state.showSettings=false;render()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h2>⚙️ Settings</h2>
+        <div style="border-bottom:1px solid #e2e8f0;padding-bottom:18px;margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">Change Password</h3>
+          <input type="password" id="newPwInput" class="inp" placeholder="New password (min 6 chars)" style="margin-bottom:8px">
+          <input type="password" id="cfPwInput" class="inp" placeholder="Confirm password" style="margin-bottom:10px">
+          <button class="btn btn-teal" onclick="doUpdPw()">Update Password</button>
+        </div>
+        <div style="margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">🎨 Branding</h3>
+          <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Organization Name</label>
+          <input class="inp" id="brandName" value="${esc(state.org)}" style="margin-bottom:10px">
+          <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Tagline</label>
+          <input class="inp" id="brandTag" value="${esc(state.tag)}" style="margin-bottom:10px">
+          <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Logo URL</label>
+          <input class="inp" id="brandLogo" value="${esc(state.logo)}" placeholder="https://example.com/logo.png" style="margin-bottom:10px">
+          <button class="btn btn-blue" onclick="doSaveBrand()">Save Branding</button>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-gray" onclick="state.showSettings=false;render()">Close</button></div>
+      </div>
+    </div>`;
+  }
+
+  return html;
+}
+
+/* ═══════════════════ INIT ═══════════════════ */
+render();
+</script>
+</body>
+</html>
