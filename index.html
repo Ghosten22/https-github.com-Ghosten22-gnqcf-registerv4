@@ -149,26 +149,22 @@ const S={
 };
 
 /*
- * CLOUD SYNC via jsonbin.io (free, no signup needed for public bins)
- * ─────────────────────────────────────────────────────────────────
+ * CLOUD SYNC — uses jsonblob.com (free, no signup, no API key)
+ * ─────────────────────────────────────────────────────────────
  * HOW IT WORKS:
  *  1. Data is always embedded in the HTML (works offline, any device)
  *  2. Admin changes are saved to localStorage (survives refresh on same browser)
- *  3. Admin can "Publish to Cloud" → creates/updates a jsonbin.io bin
- *  4. The bin ID is stored in the URL hash → share the URL and data loads everywhere
- *  5. On page load, if URL has a bin ID, it fetches cloud data automatically
- *
- * This means: you push index.html to GitHub Pages once, then manage data via admin.
- * When you publish, the URL becomes: yoursite.github.io/gnqcf-register/#bin=XXXXX
- * Anyone with that URL sees your latest published data.
+ *  3. Admin can "Publish to Cloud" → creates/updates a jsonblob
+ *  4. The blob ID is stored in the URL hash → share the URL and data loads everywhere
+ *  5. On page load, if URL has a blob ID, it fetches cloud data automatically
  */
-const JSONBIN_API="https://api.jsonbin.io/v3";
+const CLOUD_API="https://jsonblob.com/api/jsonBlob";
 let CLOUD_BIN_ID=null;
 
 /* Extract bin ID from URL hash on load */
 function getBinFromURL(){
   const h=location.hash;
-  const m=h.match(/#bin=([a-f0-9]+)/i);
+  const m=h.match(/#bin=([a-zA-Z0-9-]+)/i);
   return m?m[1]:S.g("gnqcf-bin")||null;
 }
 
@@ -185,10 +181,9 @@ async function cloudLoad(){
   if(!id)return false;
   CLOUD_BIN_ID=id;
   try{
-    const r=await fetch(JSONBIN_API+"/b/"+id+"/latest");
+    const r=await fetch(CLOUD_API+"/"+id,{headers:{"Content-Type":"application/json","Accept":"application/json"}});
     if(!r.ok)return false;
-    const j=await r.json();
-    const d=j.record||j;
+    const d=await r.json();
     if(d.quals){state.quals=d.quals;S.s("gnqcf-q",d.quals)}
     if(d.insts){state.insts=d.insts;S.s("gnqcf-i",d.insts)}
     if(d.custProv){state.custProv=d.custProv;S.s("gnqcf-cp",d.custProv)}
@@ -201,7 +196,7 @@ async function cloudLoad(){
   }catch(e){console.warn("Cloud load failed:",e);return false}
 }
 
-/* Save data to cloud (create or update bin) */
+/* Save data to cloud (create or update blob) */
 async function cloudSave(){
   const data={
     v:2,saved:new Date().toISOString(),
@@ -211,15 +206,38 @@ async function cloudSave(){
   try{
     let r;
     if(CLOUD_BIN_ID){
-      r=await fetch(JSONBIN_API+"/b/"+CLOUD_BIN_ID,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-    }else{
-      r=await fetch(JSONBIN_API+"/b",{method:"POST",headers:{"Content-Type":"application/json","X-Bin-Private":"false"},body:JSON.stringify(data)});
+      /* Update existing blob */
+      r=await fetch(CLOUD_API+"/"+CLOUD_BIN_ID,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify(data)
+      });
+      if(r.ok)return true;
+      /* If update fails (e.g. blob expired), create new one */
+      console.warn("Update failed, creating new blob...");
     }
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const j=await r.json();
-    const id=j.metadata?.id||CLOUD_BIN_ID;
-    if(id)saveBinID(id);
-    return true;
+    /* Create new blob */
+    r=await fetch(CLOUD_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify(data)
+    });
+    if(!r.ok)throw new Error("HTTP "+r.status+" "+r.statusText);
+    /* jsonblob returns the blob URL in the Location header */
+    const loc=r.headers.get("Location")||r.headers.get("location")||"";
+    let id=loc.split("/").pop();
+    /* Fallback: try to get ID from response body or URL */
+    if(!id||id.length<5){
+      const body=await r.json().catch(()=>({}));
+      id=body.id||body.blobId||"";
+    }
+    if(!id||id.length<5){
+      /* Last resort: parse from response URL */
+      const url=r.url||"";
+      id=url.split("/").pop();
+    }
+    if(id&&id.length>=5){saveBinID(id);return true}
+    throw new Error("Could not extract blob ID from response");
   }catch(e){console.error("Cloud save failed:",e);return false}
 }
 
