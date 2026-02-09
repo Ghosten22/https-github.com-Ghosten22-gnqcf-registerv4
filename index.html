@@ -148,6 +148,82 @@ const S={
   s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 };
 
+/*
+ * CLOUD SYNC via jsonbin.io (free, no signup needed for public bins)
+ * ─────────────────────────────────────────────────────────────────
+ * HOW IT WORKS:
+ *  1. Data is always embedded in the HTML (works offline, any device)
+ *  2. Admin changes are saved to localStorage (survives refresh on same browser)
+ *  3. Admin can "Publish to Cloud" → creates/updates a jsonbin.io bin
+ *  4. The bin ID is stored in the URL hash → share the URL and data loads everywhere
+ *  5. On page load, if URL has a bin ID, it fetches cloud data automatically
+ *
+ * This means: you push index.html to GitHub Pages once, then manage data via admin.
+ * When you publish, the URL becomes: yoursite.github.io/gnqcf-register/#bin=XXXXX
+ * Anyone with that URL sees your latest published data.
+ */
+const JSONBIN_API="https://api.jsonbin.io/v3";
+let CLOUD_BIN_ID=null;
+
+/* Extract bin ID from URL hash on load */
+function getBinFromURL(){
+  const h=location.hash;
+  const m=h.match(/#bin=([a-f0-9]+)/i);
+  return m?m[1]:S.g("gnqcf-bin")||null;
+}
+
+/* Save bin ID to URL and localStorage */
+function saveBinID(id){
+  CLOUD_BIN_ID=id;
+  S.s("gnqcf-bin",id);
+  history.replaceState(null,"","#bin="+id);
+}
+
+/* Fetch data from cloud */
+async function cloudLoad(){
+  const id=getBinFromURL();
+  if(!id)return false;
+  CLOUD_BIN_ID=id;
+  try{
+    const r=await fetch(JSONBIN_API+"/b/"+id+"/latest");
+    if(!r.ok)return false;
+    const j=await r.json();
+    const d=j.record||j;
+    if(d.quals){state.quals=d.quals;S.s("gnqcf-q",d.quals)}
+    if(d.insts){state.insts=d.insts;S.s("gnqcf-i",d.insts)}
+    if(d.custProv){state.custProv=d.custProv;S.s("gnqcf-cp",d.custProv)}
+    if(d.delProv){state.delProv=d.delProv;S.s("gnqcf-dp",d.delProv)}
+    if(d.org){state.org=d.org;S.s("gnqcf-org",d.org)}
+    if(d.tag){state.tag=d.tag;S.s("gnqcf-tag",d.tag)}
+    if(d.logo!==undefined){state.logo=d.logo;S.s("gnqcf-logo",d.logo)}
+    if(d.pw){state.pw=d.pw;S.s("gnqcf-pw",d.pw)}
+    render();return true;
+  }catch(e){console.warn("Cloud load failed:",e);return false}
+}
+
+/* Save data to cloud (create or update bin) */
+async function cloudSave(){
+  const data={
+    v:2,saved:new Date().toISOString(),
+    quals:state.quals,insts:state.insts,custProv:state.custProv,delProv:state.delProv,
+    org:state.org,tag:state.tag,logo:state.logo,pw:state.pw
+  };
+  try{
+    let r;
+    if(CLOUD_BIN_ID){
+      r=await fetch(JSONBIN_API+"/b/"+CLOUD_BIN_ID,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+    }else{
+      r=await fetch(JSONBIN_API+"/b",{method:"POST",headers:{"Content-Type":"application/json","X-Bin-Private":"false"},body:JSON.stringify(data)});
+    }
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    const id=j.metadata?.id||CLOUD_BIN_ID;
+    if(id)saveBinID(id);
+    return true;
+  }catch(e){console.error("Cloud save failed:",e);return false}
+}
+
+
 /* ═══════════════════ DATA ═══════════════════ */
 const DEF_PROV=["T.A. Marryshow Community College","Grenada National College","St. George's University","OECS Institute","New Life Organisation","University of the West Indies Open Campus – Grenada","Grenada Institute of Technology","Grenada School of Continuing Education"];
 const QTYPES=["Certificate","Diploma","Associate Degree","Bachelor's Degree","Postgraduate Diploma","Master's Degree","Doctoral Degree"];
@@ -212,10 +288,11 @@ const DEMO_Q=[
 /* ═══════════════════ STATE ═══════════════════ */
 let state = {
   isAdmin:false, showLogin:false, showBack:false, showAdd:false,
-  showSettings:false, showProv:false, editQ:null, toast:null,
+  showSettings:false, showProv:false, showExport:false, showImport:false,
+  editQ:null, toast:null, cloudSyncing:false, lastCloudSync:S.g("gnqcf-lastSync")||null,
   pw: S.g("gnqcf-pw")||"admin123",
-  quals: S.g("gnqcf-q")||[],
-  insts: S.g("gnqcf-i")||[],
+  quals: S.g("gnqcf-q")||JSON.parse(JSON.stringify(DEMO_Q)),
+  insts: S.g("gnqcf-i")||JSON.parse(JSON.stringify(DEMO_INST)),
   custProv: S.g("gnqcf-cp")||[],
   delProv: S.g("gnqcf-dp")||[],
   logo: S.g("gnqcf-logo")||"",
@@ -254,7 +331,99 @@ function filterInst(){
 }
 
 /* ═══════════════════ ACTIONS ═══════════════════ */
-function loadDemo(){state.quals=JSON.parse(JSON.stringify(DEMO_Q));state.insts=JSON.parse(JSON.stringify(DEMO_INST));persist();notify("Demo data loaded!")}
+function loadDemo(){state.quals=JSON.parse(JSON.stringify(DEMO_Q));state.insts=JSON.parse(JSON.stringify(DEMO_INST));persist();notify("Data reset to defaults!")}
+
+async function doPublishCloud(){
+  state.cloudSyncing=true;render();
+  const ok=await cloudSave();
+  state.cloudSyncing=false;
+  if(ok){
+    state.lastCloudSync=new Date().toISOString();
+    S.s("gnqcf-lastSync",state.lastCloudSync);
+    const url=location.origin+location.pathname+"#bin="+CLOUD_BIN_ID;
+    notify("Published to cloud! Share this URL for any device access.");
+    render();
+  }else{
+    notify("Cloud publish failed. Check your internet connection.");
+    render();
+  }
+}
+
+async function doFetchCloud(){
+  state.cloudSyncing=true;render();
+  const ok=await cloudLoad();
+  state.cloudSyncing=false;
+  if(ok){
+    state.lastCloudSync=new Date().toISOString();
+    S.s("gnqcf-lastSync",state.lastCloudSync);
+    notify("Data synced from cloud!");
+  }else{
+    notify("No cloud data found. Publish first, then share the URL.");
+  }
+  render();
+}
+function doExport(){
+  const data={version:1,exportDate:new Date().toISOString(),quals:state.quals,insts:state.insts,custProv:state.custProv,delProv:state.delProv,org:state.org,tag:state.tag,logo:state.logo};
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="gnqcf-register-backup-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  notify("Data exported!");
+}
+function doImportFile(){
+  const input=document.createElement("input");input.type="file";input.accept=".json";
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(data.quals)state.quals=data.quals;
+        if(data.insts)state.insts=data.insts;
+        if(data.custProv)state.custProv=data.custProv;
+        if(data.delProv)state.delProv=data.delProv;
+        if(data.org)state.org=data.org;
+        if(data.tag)state.tag=data.tag;
+        if(data.logo!==undefined)state.logo=data.logo;
+        persist();notify("Data imported successfully! "+state.quals.length+" qualifications, "+state.insts.length+" institutions.");render();
+      }catch(err){notify("Invalid file format. Please use a GNQCF export file.")}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function doImportJSON(){
+  const txt=(document.getElementById("importTextarea")?.value||"").trim();
+  if(!txt){notify("Paste JSON data first");return}
+  try{
+    const data=JSON.parse(txt);
+    if(data.quals)state.quals=data.quals;
+    if(data.insts)state.insts=data.insts;
+    if(data.custProv)state.custProv=data.custProv;
+    if(data.delProv)state.delProv=data.delProv;
+    if(data.org)state.org=data.org;
+    if(data.tag)state.tag=data.tag;
+    if(data.logo!==undefined)state.logo=data.logo;
+    persist();state.showImport=false;notify("Data imported! "+state.quals.length+" qualifications, "+state.insts.length+" institutions.");render();
+  }catch(err){notify("Invalid JSON. Check format and try again.")}
+}
+function doCopyExport(){
+  const data={version:1,exportDate:new Date().toISOString(),quals:state.quals,insts:state.insts,custProv:state.custProv,delProv:state.delProv,org:state.org,tag:state.tag,logo:state.logo};
+  const json=JSON.stringify(data);
+  navigator.clipboard.writeText(json).then(()=>notify("Data copied to clipboard! Paste it on your other device.")).catch(()=>{state.showExport=true;render()});
+}
+function doResetAll(){
+  if(!confirm("Reset ALL data to factory defaults? This cannot be undone."))return;
+  localStorage.removeItem("gnqcf-q");localStorage.removeItem("gnqcf-i");
+  localStorage.removeItem("gnqcf-cp");localStorage.removeItem("gnqcf-dp");localStorage.removeItem("gnqcf-pw");
+  localStorage.removeItem("gnqcf-logo");localStorage.removeItem("gnqcf-org");localStorage.removeItem("gnqcf-tag");
+  localStorage.removeItem("gnqcf-bin");localStorage.removeItem("gnqcf-lastSync");
+  state.quals=JSON.parse(JSON.stringify(DEMO_Q));state.insts=JSON.parse(JSON.stringify(DEMO_INST));
+  state.custProv=[];state.delProv=[];state.pw="admin123";state.logo="";state.org="GNAB";state.tag="Grenada National Accreditation Board";
+  state.lastCloudSync=null;CLOUD_BIN_ID=null;history.replaceState(null,"",location.pathname);
+  notify("All data reset to factory defaults!");render();
+}
 function doLogin(){
   const pw=document.getElementById("pwInput")?.value||"";
   if(pw===state.pw){state.isAdmin=true;state.showLogin=false;notify("Logged in!")}
@@ -283,14 +452,211 @@ function doUpdPw(){
   const cp=document.getElementById("cfPwInput")?.value||"";
   if(np.length<6){notify("Min 6 characters");return}
   if(np!==cp){notify("Passwords don't match");return}
-  state.pw=np;persist();notify("Password updated!");render();
+  state.pw=np;persist();
+  /* Auto-publish password to cloud so it's the same on all devices */
+  if(CLOUD_BIN_ID){cloudSave().then(()=>notify("Password updated & synced to cloud!")).catch(()=>notify("Password updated locally. Publish to cloud to sync across devices."))}
+  else{notify("Password updated! Publish to cloud to sync across all devices.")}
+  render();
 }
 function doSaveBrand(){
   const n=document.getElementById("brandName")?.value;
   const t=document.getElementById("brandTag")?.value;
   const l=document.getElementById("brandLogo")?.value;
   if(n)state.org=n;if(t)state.tag=t;if(l!==undefined)state.logo=l;
-  persist();notify("Branding saved!");render();
+  persist();
+  if(CLOUD_BIN_ID){cloudSave().then(()=>notify("Branding saved & synced!")).catch(()=>notify("Branding saved locally."))}
+  else notify("Branding saved!");
+  render();
+}
+
+/* Logo file upload — converts to base64 data URI */
+function doLogoUpload(){
+  const input=document.createElement("input");input.type="file";input.accept="image/*";
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(!file.type.startsWith("image/")){notify("Please select an image file");return}
+    if(file.size>500*1024){notify("Image too large. Max 500KB.");return}
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement("canvas");
+        const max=200;let w=img.width,h=img.height;
+        if(w>h){if(w>max){h*=max/w;w=max}}else{if(h>max){w*=max/h;h=max}}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext("2d").drawImage(img,0,0,w,h);
+        state.logo=canvas.toDataURL("image/png",0.9);
+        persist();notify("Logo uploaded!");render();
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function doRemoveLogo(){state.logo="";persist();notify("Logo removed!");render()}
+
+/* Provider rename (works for both default renames and custom) */
+function doEditProv(oldName,isDefault){
+  const newName=prompt("Edit provider name:",oldName);
+  if(!newName||newName.trim()===oldName)return;
+  const trimmed=newName.trim();
+  if(allProv().includes(trimmed)&&trimmed!==oldName){notify("Provider name already exists");return}
+  if(isDefault){
+    /* For defaults: track the old name as deleted, add new name as custom */
+    if(!state.delProv.includes(oldName))state.delProv.push(oldName);
+    state.custProv.push(trimmed);
+  }else{
+    state.custProv=state.custProv.map(p=>p===oldName?trimmed:p);
+  }
+  /* Update all qualifications that reference the old provider name */
+  state.quals=state.quals.map(q=>q.provider===oldName?{...q,provider:trimmed}:q);
+  /* Update all institutions that reference the old provider name */
+  state.insts=state.insts.map(i=>i.name===oldName?{...i,name:trimmed}:i);
+  persist();notify("Provider renamed!");render();
+}
+
+/* CSV / XLS / XLSX Import */
+function doImportSpreadsheet(){
+  const input=document.createElement("input");input.type="file";input.accept=".csv,.xls,.xlsx";
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const ext=file.name.split(".").pop().toLowerCase();
+    if(ext==="csv"){
+      const reader=new FileReader();
+      reader.onload=ev=>parseCSV(ev.target.result);
+      reader.readAsText(file);
+    }else if(ext==="xls"||ext==="xlsx"){
+      /* Load SheetJS dynamically */
+      if(typeof XLSX!=="undefined"){
+        readXLS(file);
+      }else{
+        const script=document.createElement("script");
+        script.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+        script.onload=()=>readXLS(file);
+        script.onerror=()=>notify("Failed to load Excel parser. Try CSV instead.");
+        document.head.appendChild(script);
+      }
+    }else{
+      notify("Unsupported file type. Use .csv, .xls, or .xlsx");
+    }
+  };
+  input.click();
+}
+
+function readXLS(file){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const wb=XLSX.read(ev.target.result,{type:"array"});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const csv=XLSX.utils.sheet_to_csv(ws);
+      parseCSV(csv);
+    }catch(err){notify("Error reading Excel file: "+err.message)}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseCSV(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2){notify("File is empty or has no data rows.");return}
+  /* Parse header */
+  const header=parseCSVLine(lines[0]).map(h=>h.toLowerCase().trim());
+  /* Detect if this is qualifications or institutions based on headers */
+  const isQual=header.some(h=>["title","qualification","programme","program"].includes(h));
+  const isInst=header.some(h=>["institution","name","abbr","abbreviation"].includes(h))&&!isQual;
+
+  if(isQual){
+    const mapped=mapQualHeaders(header);
+    let count=0;
+    for(let i=1;i<lines.length;i++){
+      const vals=parseCSVLine(lines[i]);
+      if(vals.length<2)continue;
+      const q={id:Date.now()+i};
+      if(mapped.title!==undefined)q.title=vals[mapped.title]?.trim()||"";
+      if(mapped.provider!==undefined)q.provider=vals[mapped.provider]?.trim()||"";
+      if(mapped.type!==undefined)q.type=vals[mapped.type]?.trim()||"";
+      if(mapped.level!==undefined)q.level=vals[mapped.level]?.trim()||"";
+      if(mapped.sector!==undefined)q.sector=vals[mapped.sector]?.trim()||"";
+      if(mapped.credits!==undefined)q.credits=parseInt(vals[mapped.credits])||"";
+      if(mapped.description!==undefined)q.description=vals[mapped.description]?.trim()||"";
+      if(mapped.status!==undefined)q.status=vals[mapped.status]?.trim().toLowerCase()||"registered";
+      if(!q.title)continue;
+      if(!q.status||!STS.find(s=>s.key===q.status))q.status="registered";
+      state.quals.push(q);count++;
+    }
+    persist();notify("Imported "+count+" qualifications from spreadsheet!");
+  }else if(isInst){
+    const mapped=mapInstHeaders(header);
+    let count=0;
+    for(let i=1;i<lines.length;i++){
+      const vals=parseCSVLine(lines[i]);
+      if(vals.length<2)continue;
+      const inst={id:"imp-"+Date.now()+"-"+i,ab:[]};
+      if(mapped.name!==undefined)inst.name=vals[mapped.name]?.trim()||"";
+      if(mapped.abbr!==undefined)inst.abbr=vals[mapped.abbr]?.trim()||"";
+      if(mapped.type!==undefined)inst.type=vals[mapped.type]?.trim()||"";
+      if(mapped.status!==undefined)inst.status=vals[mapped.status]?.trim().toLowerCase()||"registered";
+      if(mapped.parish!==undefined)inst.parish=vals[mapped.parish]?.trim()||"";
+      if(mapped.web!==undefined)inst.web=vals[mapped.web]?.trim()||"";
+      if(mapped.dur!==undefined)inst.dur=vals[mapped.dur]?.trim()||"";
+      if(!inst.name)continue;
+      if(!inst.status||!STS.find(s=>s.key===inst.status))inst.status="registered";
+      inst.ab=[{name:"Grenada National Accreditation Board",status:inst.status,duration:inst.dur||""}];
+      state.insts.push(inst);count++;
+    }
+    persist();notify("Imported "+count+" institutions from spreadsheet!");
+  }else{
+    notify("Could not detect data type. Ensure headers include 'Title' (for qualifications) or 'Institution'/'Name' (for institutions).");
+  }
+  render();
+}
+
+function parseCSVLine(line){
+  const result=[];let current="";let inQuotes=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(inQuotes){
+      if(ch==='"'&&line[i+1]==='"'){current+='"';i++}
+      else if(ch==='"')inQuotes=false;
+      else current+=ch;
+    }else{
+      if(ch==='"')inQuotes=true;
+      else if(ch===","){result.push(current);current=""}
+      else current+=ch;
+    }
+  }
+  result.push(current);return result;
+}
+
+function mapQualHeaders(h){
+  const m={};
+  h.forEach((col,i)=>{
+    if(["title","qualification","programme","program","name"].includes(col))m.title=i;
+    else if(["provider","institution","college","university"].includes(col))m.provider=i;
+    else if(["type","qualification type","qual type"].includes(col))m.type=i;
+    else if(["level","nqf level","gnqcf level"].includes(col))m.level=i;
+    else if(["sector","field","area"].includes(col))m.sector=i;
+    else if(["credits","credit","credit value"].includes(col))m.credits=i;
+    else if(["description","desc","details"].includes(col))m.description=i;
+    else if(["status","verification","accreditation"].includes(col))m.status=i;
+  });
+  return m;
+}
+
+function mapInstHeaders(h){
+  const m={};
+  h.forEach((col,i)=>{
+    if(["institution","name","institution name","provider"].includes(col))m.name=i;
+    else if(["abbr","abbreviation","short","code"].includes(col))m.abbr=i;
+    else if(["type","institution type","category"].includes(col))m.type=i;
+    else if(["status","accreditation","accreditation status"].includes(col))m.status=i;
+    else if(["parish","location","region"].includes(col))m.parish=i;
+    else if(["website","web","url","site"].includes(col))m.web=i;
+    else if(["duration","period","validity","valid"].includes(col))m.dur=i;
+  });
+  return m;
 }
 
 function setTab(t){state.tab=t;state.selInst=null;state.selLv=null;render()}
@@ -330,10 +696,28 @@ function render(){
           <div class="stat-card"><p class="label">Candidate</p><p class="value" style="color:#ea580c">${cand}</p></div>
           <div class="stat-card"><p class="label">Institutions</p><p class="value" style="color:#2563eb">${state.insts.length}</p></div>
         </div>
-        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-          <button class="btn btn-purple" onclick="loadDemo()">🔄 Load Demo Data</button>
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
           <button class="btn btn-teal" onclick="openAdd()">➕ Add Qualification</button>
+          <button class="btn btn-blue" onclick="doPublishCloud()" ${state.cloudSyncing?"disabled":""}>${state.cloudSyncing?"⏳ Publishing...":"☁️ Publish to Cloud"}</button>
+          <button class="btn btn-indigo" onclick="doFetchCloud()" ${state.cloudSyncing?"disabled":""}>🔄 Sync from Cloud</button>
+          <button class="btn btn-purple" onclick="doImportSpreadsheet()">📊 Import CSV/XLS</button>
+          <button class="btn btn-blue" onclick="doExport()">📥 Export File</button>
+          <button class="btn btn-purple" onclick="state.showImport=true;render()">📤 Import JSON</button>
+          <button class="btn btn-gray" onclick="loadDemo()">🔄 Reset Defaults</button>
         </div>
+        ${CLOUD_BIN_ID?`<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:14px">☁️</span>
+          <div style="flex:1;min-width:200px">
+            <p style="margin:0;font-size:13px;font-weight:600;color:#065f46">Cloud Sync Active</p>
+            <p style="margin:2px 0 0;font-size:11px;color:#047857">Bin ID: ${CLOUD_BIN_ID.substring(0,12)}... ${state.lastCloudSync?"· Last synced: "+new Date(state.lastCloudSync).toLocaleString():""}</p>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-teal btn-sm" onclick="navigator.clipboard.writeText(location.href).then(()=>notify('URL copied!'))">📋 Copy Share URL</button>
+          </div>
+        </div>`:
+        `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 18px;margin-bottom:20px">
+          <p style="margin:0;font-size:13px;color:#1e40af"><strong>💡 Cross-device sync:</strong> Click "☁️ Publish to Cloud" to save your data online. Then share the URL — it will work on any browser or device.</p>
+        </div>`}
         <div style="background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:auto">
           <table class="tbl tbl-admin" style="min-width:800px">
             <thead><tr>${["Title","Provider","Type","Level","Sector","Credits","Status","Actions"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
@@ -413,7 +797,7 @@ function render(){
   <!-- Footer -->
   <footer class="footer">
     <div class="flag-bar" style="max-width:120px;margin:0 auto 12px;height:3px"></div>
-    <p>© 2026 Grenada National Qualifications and Credit Framework · Ministry of Education, Grenada</p>
+    <p>© 2026 Grenada National Qualifications and Credit Framework · Ministry of Education, Grenada National Accreditation Board</p>
   </footer>
 
   ${state.showLogin?renderLoginModal():""}
@@ -427,7 +811,7 @@ function renderRegister(){
   const f=filterQuals();
   const ap=allProv();
   return `
-  ${state.quals.length===0?`<div class="welcome"><h3 style="margin:0 0 6px;font-size:16px;font-weight:700">👋 Welcome!</h3><p style="color:#7a94b0;font-size:13px;margin:0">No qualifications data found.${state.isAdmin?` <button class="btn btn-teal btn-sm" onclick="loadDemo()">Load Demo Data</button>`:""}</p></div>`:""}
+  ${state.quals.length===0?`<div class="welcome"><h3 style="margin:0 0 6px;font-size:16px;font-weight:700">👋 Welcome!</h3><p style="color:#7a94b0;font-size:13px;margin:0">No qualifications data found.${state.isAdmin?` <button class="btn btn-gray btn-sm" onclick="loadDemo()">Reset to Defaults</button> or <button class="btn btn-purple btn-sm" onclick="state.showImport=true;render()">Import Data</button>`:""}</p></div>`:""}
   <input class="inp-dark" value="${esc(state.search)}" oninput="setSearch(this.value)" placeholder="Search qualifications or providers..." style="margin-bottom:16px">
   <div class="filter-row">
     ${[{k:"provider",lb:"All Providers",opts:ap},{k:"type",lb:"All Types",opts:QTYPES},{k:"level",lb:"All Levels",opts:LVLABELS},{k:"sector",lb:"All Sectors",opts:SECTORS},{k:"status",lb:"All Status",opts:STS.map(s=>s.key)}].map(fl=>`
@@ -465,7 +849,7 @@ function renderInstitutions(){
   if(state.selInst) return renderInstDetail();
   const fi=filterInst();
   return `
-  ${state.insts.length===0?`<div class="welcome"><p style="margin:0;color:#7a94b0;font-size:13px">No institutions data.${state.isAdmin?` <button class="btn btn-teal btn-sm" onclick="loadDemo()">Load Demo Data</button>`:""}</p></div>`:""}
+  ${state.insts.length===0?`<div class="welcome"><p style="margin:0;color:#7a94b0;font-size:13px">No institutions data.${state.isAdmin?` <button class="btn btn-gray btn-sm" onclick="loadDemo()">Reset to Defaults</button> or <button class="btn btn-purple btn-sm" onclick="state.showImport=true;render()">Import Data</button>`:""}</p></div>`:""}
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
     <button class="pill ${state.instFlt==="all"?"active":""}" style="--ac:#7a94b0" onclick="setInstFlt('all')">All (${state.insts.length})</button>
     ${STS.map(s=>{const ct=state.insts.filter(i=>i.status===s.key).length;return`<button class="pill ${state.instFlt===s.key?"active":""}" style="--ac:${s.c}" onclick="setInstFlt('${s.key}')">${s.icon} ${s.label} (${ct})</button>`}).join("")}
@@ -676,26 +1060,39 @@ function renderModals(){
   if(state.showProv){
     html+=`
     <div class="modal-overlay" onclick="state.showProv=false;render()">
-      <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:620px">
         <h2>Manage Providers</h2>
         <div style="display:flex;gap:8px;margin-bottom:18px">
           <input class="inp" id="newProvInput" placeholder="New provider name" onkeypress="if(event.key==='Enter')doAddProv()" style="flex:1">
           <button class="btn btn-teal" onclick="doAddProv()">Add</button>
         </div>
         <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Default Providers</h4>
-        <div style="max-height:200px;overflow-y:auto;margin-bottom:14px">
-          ${DEF_PROV.filter(p=>!state.delProv.includes(p)).map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8fafc;border-radius:8px;margin-bottom:4px;font-size:13px"><span>${esc(p)}</span><div style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8;font-size:11px;font-style:italic">Default</span><button onclick="doDelDefProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:14px;color:#dc2626" title="Remove provider">🗑️</button></div></div>`).join("")}
+        <div style="max-height:220px;overflow-y:auto;margin-bottom:14px">
+          ${DEF_PROV.filter(p=>!state.delProv.includes(p)).map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8fafc;border-radius:8px;margin-bottom:4px;font-size:13px">
+            <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p)}</span>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <span style="color:#94a3b8;font-size:10px;font-style:italic;margin-right:4px">Default</span>
+              <button onclick="doEditProv('${esc(p.replace(/'/g,"\\'"))}',true)" style="background:none;border:none;cursor:pointer;font-size:13px;color:#2563eb;padding:2px" title="Edit name">✏️</button>
+              <button onclick="doDelDefProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:13px;color:#dc2626;padding:2px" title="Remove">🗑️</button>
+            </div>
+          </div>`).join("")}
           ${DEF_PROV.filter(p=>!state.delProv.includes(p)).length===0?`<p style="color:#94a3b8;font-size:13px;padding:8px 12px">All default providers have been removed.</p>`:""}
         </div>
         ${state.delProv.length>0?`
-        <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Removed Providers <span style="color:#94a3b8;font-size:11px">(click to restore)</span></h4>
-        <div style="max-height:160px;overflow-y:auto;margin-bottom:14px">
+        <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Removed Providers <span style="color:#94a3b8;font-size:11px">(click restore to bring back)</span></h4>
+        <div style="max-height:140px;overflow-y:auto;margin-bottom:14px">
           ${state.delProv.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fef2f2;border-radius:8px;margin-bottom:4px;font-size:13px;opacity:.7"><span style="text-decoration:line-through;color:#9ca3af">${esc(p)}</span><button onclick="doRestoreProv('${esc(p.replace(/'/g,"\\'"))}')" class="btn btn-teal btn-sm" style="font-size:11px;padding:4px 12px">↩ Restore</button></div>`).join("")}
         </div>`:""}
         ${state.custProv.length>0?`
         <h4 style="margin:0 0 8px;font-size:13px;color:#64748b">Custom Providers</h4>
-        <div style="max-height:200px;overflow-y:auto">
-          ${state.custProv.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#eff6ff;border-radius:8px;margin-bottom:4px;font-size:13px"><span>${esc(p)}</span><button onclick="doDelProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:14px;color:#dc2626">🗑️</button></div>`).join("")}
+        <div style="max-height:200px;overflow-y:auto;margin-bottom:14px">
+          ${state.custProv.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#eff6ff;border-radius:8px;margin-bottom:4px;font-size:13px">
+            <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p)}</span>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <button onclick="doEditProv('${esc(p.replace(/'/g,"\\'"))}',false)" style="background:none;border:none;cursor:pointer;font-size:13px;color:#2563eb;padding:2px" title="Edit name">✏️</button>
+              <button onclick="doDelProv('${esc(p.replace(/'/g,"\\'"))}')" style="background:none;border:none;cursor:pointer;font-size:13px;color:#dc2626;padding:2px" title="Remove">🗑️</button>
+            </div>
+          </div>`).join("")}
         </div>`:""}
         <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn btn-gray" onclick="state.showProv=false;render()">Close</button></div>
       </div>
@@ -720,11 +1117,99 @@ function renderModals(){
           <input class="inp" id="brandName" value="${esc(state.org)}" style="margin-bottom:10px">
           <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Tagline</label>
           <input class="inp" id="brandTag" value="${esc(state.tag)}" style="margin-bottom:10px">
-          <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Logo URL</label>
-          <input class="inp" id="brandLogo" value="${esc(state.logo)}" placeholder="https://example.com/logo.png" style="margin-bottom:10px">
+
+          <label style="font-size:12px;color:#64748b;font-weight:600;display:block;margin-bottom:4px">Logo</label>
+          ${state.logo?`<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+            <img src="${esc(state.logo)}" alt="Logo" style="width:48px;height:48px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #e2e8f0">
+            <div style="flex:1"><p style="margin:0;font-size:12px;color:#334155;font-weight:600">Current logo</p></div>
+            <button class="btn btn-red btn-sm" onclick="doRemoveLogo()">Remove</button>
+          </div>`:""}
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <button class="btn btn-teal btn-sm" onclick="doLogoUpload()">📁 Upload Image</button>
+            <span style="font-size:12px;color:#94a3b8;align-self:center">or enter URL:</span>
+          </div>
+          <input class="inp" id="brandLogo" value="${esc(state.logo)}" placeholder="https://example.com/logo.png" style="margin-bottom:10px;font-size:12px">
           <button class="btn btn-blue" onclick="doSaveBrand()">Save Branding</button>
         </div>
+
+        <div style="border-top:1px solid #e2e8f0;padding-top:18px;margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">📊 Import from Spreadsheet</h3>
+          <p style="font-size:12px;color:#64748b;margin-bottom:10px">Upload a CSV or Excel file to bulk-import qualifications or institutions. The file should have column headers matching the data fields (e.g. Title, Provider, Type, Level, Sector, Credits, Status).</p>
+          <button class="btn btn-purple btn-sm" onclick="doImportSpreadsheet()">📁 Upload CSV / XLS / XLSX</button>
+          <details style="margin-top:10px">
+            <summary style="font-size:12px;color:#2563eb;cursor:pointer;font-weight:600">Expected column headers</summary>
+            <div style="margin-top:8px;font-size:11px;color:#64748b;line-height:1.7">
+              <p style="margin:0 0 4px"><strong>Qualifications:</strong> Title, Provider, Type, Level, Sector, Credits, Description, Status</p>
+              <p style="margin:0"><strong>Institutions:</strong> Institution/Name, Abbr, Type, Status, Parish, Website, Duration</p>
+            </div>
+          </details>
+        </div>
+        <div style="border-top:1px solid #e2e8f0;padding-top:18px;margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">☁️ Cloud Sync & Data</h3>
+          <p style="font-size:12px;color:#64748b;margin-bottom:12px">Publish your data to the cloud so it's accessible from any device. Just share the URL.</p>
+          ${CLOUD_BIN_ID?`<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#065f46">
+            <strong>☁️ Cloud active</strong> — Bin: ${CLOUD_BIN_ID.substring(0,12)}...${state.lastCloudSync?" · "+new Date(state.lastCloudSync).toLocaleString():""}
+          </div>`:`<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#92400e">
+            <strong>⚠️ Not published yet</strong> — Data is only saved locally on this device.
+          </div>`}
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <button class="btn btn-blue btn-sm" onclick="doPublishCloud()">☁️ Publish to Cloud</button>
+            <button class="btn btn-indigo btn-sm" onclick="doFetchCloud()">🔄 Sync from Cloud</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <button class="btn btn-gray btn-sm" onclick="doExport()">📥 Export to File</button>
+            <button class="btn btn-purple btn-sm" onclick="state.showSettings=false;state.showImport=true;render()">📤 Import from File</button>
+          </div>
+          <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-top:12px">
+            <p style="font-size:12px;color:#991b1b;margin:0 0 8px;font-weight:600">⚠️ Danger Zone</p>
+            <button class="btn btn-red btn-sm" onclick="doResetAll()">🗑️ Reset All Data to Factory Defaults</button>
+          </div>
+        </div>
         <div style="display:flex;justify-content:flex-end"><button class="btn btn-gray" onclick="state.showSettings=false;render()">Close</button></div>
+      </div>
+    </div>`;
+  }
+
+  /* Import Data Modal */
+  if(state.showImport){
+    html+=`
+    <div class="modal-overlay" onclick="state.showImport=false;render()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h2>📤 Import Data</h2>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px">Import data from another device or a backup file. This will replace your current data.</p>
+
+        <div style="border-bottom:1px solid #e2e8f0;padding-bottom:18px;margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">Option 1: Upload File</h3>
+          <p style="font-size:12px;color:#64748b;margin-bottom:10px">Upload a .json backup file exported from another device.</p>
+          <button class="btn btn-blue" onclick="doImportFile()">📁 Choose File</button>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <h3 style="margin:0 0 10px;font-size:15px;font-weight:700;color:#334155">Option 2: Paste JSON</h3>
+          <p style="font-size:12px;color:#64748b;margin-bottom:10px">Paste the data you copied from "📋 Copy Data" on another device.</p>
+          <textarea id="importTextarea" class="inp" rows="6" placeholder="Paste exported JSON data here..." style="font-size:12px;font-family:monospace;resize:vertical;margin-bottom:10px"></textarea>
+          <button class="btn btn-teal" onclick="doImportJSON()">Import from Paste</button>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn btn-gray" onclick="state.showImport=false;render()">Cancel</button></div>
+      </div>
+    </div>`;
+  }
+
+  /* Export/Copy Preview Modal */
+  if(state.showExport){
+    const data=JSON.stringify({version:1,exportDate:new Date().toISOString(),quals:state.quals,insts:state.insts,custProv:state.custProv,delProv:state.delProv,org:state.org,tag:state.tag,logo:state.logo});
+    html+=`
+    <div class="modal-overlay" onclick="state.showExport=false;render()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h2>📋 Copy Data</h2>
+        <p style="font-size:13px;color:#64748b;margin-bottom:12px">Copy this text and paste it into the "Import Data" screen on your other device.</p>
+        <textarea id="exportTextarea" class="inp" rows="8" readonly style="font-size:11px;font-family:monospace;resize:vertical;margin-bottom:12px;background:#f8fafc">${esc(data)}</textarea>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-teal" style="flex:1" onclick="document.getElementById('exportTextarea').select();document.execCommand('copy');notify('Copied!')">📋 Select & Copy</button>
+          <button class="btn btn-blue" style="flex:1" onclick="doExport()">📥 Download File</button>
+          <button class="btn btn-gray" onclick="state.showExport=false;render()">Close</button>
+        </div>
       </div>
     </div>`;
   }
@@ -733,7 +1218,15 @@ function renderModals(){
 }
 
 /* ═══════════════════ INIT ═══════════════════ */
+/* Render immediately with embedded/localStorage data, then try cloud overlay */
 render();
+(async()=>{
+  const binId=getBinFromURL();
+  if(binId){
+    CLOUD_BIN_ID=binId;
+    await cloudLoad();
+  }
+})();
 </script>
 </body>
 </html>
